@@ -4,15 +4,16 @@ import random
 import time
 
 DEER_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","deer.png")),  (8, 8))
+PADDING = 10
 herd = []
 
 class Deer:
-    MAX_VEL = 5
-    FATIGUE = 0.1  # energy cost for moving
-    MAX_MOVE_TIME = 30  # frames
-    MAX_AGE = 10
+    MAX_VEL = 5  # velocity
+    FATIGUE = 0.5  # energy cost for moving
+    MAX_MOVE_TIME = 30  # number of frames to move in random dir
+    MAX_AGE = 12  # maximum life of a deer
     MAX_HUNGER = 3  # maximum seconds a wolf can go without eating
-    MATURITY_AGE = 8  # age of maturity in secs
+    MATURITY_AGE = 7  # age of maturity in secs
     BIRTH_INTERVAL = 2  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
     REPRODUCTION_THRESHOLD = 90  # energy required to reproduce
@@ -44,10 +45,14 @@ class Deer:
         self.checkBounds()
 
     def checkBounds(self):
-        if self.x < 0 or self.x > 600 - DEER_IMG.get_width():
-            self.vel = (-self.vel[0], self.vel[1])
-        if self.y < 0 or self.y > 600 - DEER_IMG.get_height():
-            self.vel = (self.vel[0], -self.vel[1])
+        if self.x < 0:
+            self.x = 0
+        if self.x > 600 - DEER_IMG.get_width():
+            self.x = 600 - DEER_IMG.get_width()
+        if self.y < 0:
+            self.y = 0
+        if self.y > 600 - DEER_IMG.get_height():
+            self.y = 600 - DEER_IMG.get_height()
 
     def isEaten(self):
         self.energy = 0
@@ -58,6 +63,7 @@ class Deer:
         self.timeSinceLastBirth = time.time() - self.birthTime
         if self.age > self.MAX_AGE:
             self.isEaten()
+            herd.remove(self)
         if self.age > self.MATURITY_AGE:
             self.mature = True
         if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL:
@@ -72,12 +78,12 @@ class Deer:
             randY = random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)
             if self.x + randX < 0:
                 randX = 0
-            elif self.x + randX > 600 - DEER_IMG.get_width():
-                randX = 584
+            elif self.x + randX > 600 - PADDING:
+                randX = 0
             if self.y + randY < 0:
                 randY = 0
-            elif self.y + randY > 600 - DEER_IMG.get_width():
-                randY = 584
+            elif self.y + randY > 600 - PADDING:
+                randY = 0
             herd.append(Deer(self.x + randX, self.y + randY))
 
     def draw(self, screen):

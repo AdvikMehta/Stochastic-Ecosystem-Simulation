@@ -21,7 +21,7 @@ def drawWindow(screen, wolves, herd):
         wolf.draw(screen)
         if wolf.target:
             pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x + 4, wolf.target.y + 4))
-    if len(wolves) > 0:
+    if len(wolves) > 0 and len(herd) > 0:
         text = STAT_FONT.render("Wolf Energy " + str(int(wolves[0].energy)), True, (0, 0, 0))
         screen.blit(text, (50, 50))
         text = STAT_FONT.render("Age: " + str(herd[0].age), True, (0, 0, 0))
@@ -38,17 +38,17 @@ def spawnWolf(wolves, num):
     for _ in range(num):
         wolves.append(Wolf.Wolf(rd.randint(0, WIN_WIDTH-PADDING), rd.randint(0, WIN_HEIGHT-PADDING)))
 
-def checkDeadAnimals(wolves, herd):
+def checkDeadAnimals(pack, herd):
     for deer in herd:
         if not deer.isAlive():
             herd.remove(deer)
-    for wolf in wolves:
+    for wolf in pack:
         if not wolf.isAlive():
-            wolves.remove(wolf)
+            pack.remove(wolf)
 
-def checkKillings(wolves, herd):
-    if len(wolves) > 0:
-        for wolf in wolves:
+def checkKillings(pack, herd):
+    if len(pack) > 0:
+        for wolf in pack:
             if wolf.target:
                 if len(herd) > 0:
                     dist = math.sqrt((wolf.x + 8 - wolf.target.x - 4)**2 + (wolf.y + 8 - wolf.target.y - 4)**2)
@@ -56,35 +56,50 @@ def checkKillings(wolves, herd):
                         wolf.eat(wolf.target)
                         wolf.target = None
 
-def moveTargeted(wolves, herd):
+def moveTargeted(wolf, herd):
     if len(herd) > 0:
-        for wolf in wolves:
-            if wolf.target is None:  # select target if not already there
-                minDist = math.sqrt((wolf.y - herd[0].y)**2 + (wolf.x - herd[0].x)**2)
-                minInd = 0
-                for i in range(1, len(herd)):
-                    dist = math.sqrt((wolf.y - herd[i].y)**2 + (wolf.x - herd[i].x)**2)
-                    if dist < minDist:
-                        minDist = dist
-                        minInd = i
-                wolf.target = herd[minInd]
-            radians = math.atan2(wolf.target.y - wolf.y, wolf.target.x - wolf.x)
-            dy = 5 * math.sin(radians)
-            dx = 5 * math.cos(radians)
-            wolf.x += int(dx)
-            wolf.y += int(dy)
-            wolf.energy -= wolf.FATIGUE
-            wolf.checkBounds()
+        if wolf.target is None:  # select target if not already there
+            minDist = math.sqrt((wolf.y - herd[0].y)**2 + (wolf.x - herd[0].x)**2)
+            minInd = 0
+            for i in range(1, len(herd)):
+                dist = math.sqrt((wolf.y - herd[i].y)**2 + (wolf.x - herd[i].x)**2)
+                if dist < minDist:
+                    minDist = dist
+                    minInd = i
+            wolf.target = herd[minInd]
+        radians = math.atan2(wolf.target.y - wolf.y, wolf.target.x - wolf.x)
+        dy = 5 * math.sin(radians)
+        dx = 5 * math.cos(radians)
+        wolf.x += int(dx)
+        wolf.y += int(dy)
+        wolf.energy -= wolf.FATIGUE
+        wolf.checkBounds()
+
+def moveTargeted2(deer, pack):
+    if len(pack) > 0:
+        minDist = math.sqrt((deer.y - pack[0].y) ** 2 + (deer.x - pack[0].x) ** 2)
+        minInd = 0
+        for i in range(1, len(pack)):
+            dist = math.sqrt((deer.y - pack[i].y) ** 2 + (deer.x - pack[i].x) ** 2)
+            if dist < minDist:
+                minDist = dist
+                minInd = i
+        nearest = pack[minInd]
+        radians = math.atan2(nearest.y - deer.y, nearest.x - deer.x)
+        dy = 4 * math.sin(radians)
+        dx = 4 * math.cos(radians)
+        deer.x -= int(dx)  # running away
+        deer.y -= int(dy)
+        deer.energy -= deer.FATIGUE
+        deer.checkBounds()
 
 def main():
     running = True
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     clock = pygame.time.Clock()
 
-    # herd = []
-    # wolfList = []
     spawnDeer(Deer.herd, 100)
-    spawnWolf(Wolf.wolves, 1)
+    spawnWolf(Wolf.pack, 8)
 
     # direction = -1
 
@@ -111,18 +126,19 @@ def main():
 
         # if len(Wolf.wolves) > 0:
         #     Wolf.wolves[0].moveController(direction)
-
-        for deer in Deer.herd:
-            deer.move()
-            deer.grow()
-        moveTargeted(Wolf.wolves, Deer.herd)
-        checkKillings(Wolf.wolves, Deer.herd)
-        checkDeadAnimals(Wolf.wolves, Deer.herd)
-
-        for wolf in Wolf.wolves:
+        for wolf in Wolf.pack:
             wolf.grow()
+            moveTargeted(wolf, Deer.herd)
+        for deer in Deer.herd:
+            deer.grow()
+            # moveTargeted2(deer, Wolf.pack)
+            deer.move()
 
-        drawWindow(screen, Wolf.wolves, Deer.herd)
+
+        checkKillings(Wolf.pack, Deer.herd)
+        checkDeadAnimals(Wolf.pack, Deer.herd)
+
+        drawWindow(screen, Wolf.pack, Deer.herd)
 
     pygame.quit()
     quit()

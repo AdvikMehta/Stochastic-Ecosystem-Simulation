@@ -4,13 +4,13 @@ import time
 import random
 
 WOLF_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","wolf.png")),  (16, 16))
-wolves = []
+pack = []
 
 class Wolf:
     VEL = 5  # velocity
     FATIGUE = 0.5  # energy cost for moving
     MAX_AGE = 20  # maximum life of a wolf
-    MAX_HUNGER = 3.5  # maximum seconds a wolf can go without eating
+    MAX_HUNGER = 3  # maximum seconds a wolf can go without eating
     MATURITY_AGE = 10  # age of maturity
     BIRTH_INTERVAL = 4  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
@@ -85,8 +85,8 @@ class Wolf:
         self.timeSinceLastBirth = 0
         litterSize = random.randint(1, 4)
         for _ in range(litterSize):
-            wolves.append(Wolf(self.x + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY),
-                               self.y + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)))
+            pack.append(Wolf(self.x + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY),
+                            self.y + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)))
 
     def draw(self, screen):
         screen.blit(WOLF_IMG, (self.x, self.y))
