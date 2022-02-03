@@ -13,20 +13,20 @@ PADDING = 10
 GLOBAL_ENERGY = 100
 STAT_FONT = pygame.font.Font((os.path.join("assets","statfont.ttf")), 28)
 
-def drawWindow(screen, wolves, herd):
+def drawWindow(screen, pack, herd):
     screen.fill((255,255,255))
     for deer in herd:
         deer.draw(screen)
-    for wolf in wolves:
+    for wolf in pack:
         wolf.draw(screen)
         if wolf.target:
-            pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x + 4, wolf.target.y + 4))
-    if len(wolves) > 0 and len(herd) > 0:
-        text = STAT_FONT.render("Wolf Energy " + str(int(wolves[0].energy)), True, (0, 0, 0))
+            pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x, wolf.target.y))
+    if len(pack) > 0 and len(herd) > 0:
+        text = STAT_FONT.render("Timer " + str(int(pack[0].energy)), True, (0, 0, 0))
         screen.blit(text, (50, 50))
-        text = STAT_FONT.render("Age: " + str(herd[0].age), True, (0, 0, 0))
+        text = STAT_FONT.render("Deer Population: " + str(len(herd)), True, (0, 0, 0))
         screen.blit(text, (50, 80))
-        text = STAT_FONT.render("Mature: " + str(herd[0].mature), True, (0, 0, 0))
+        text = STAT_FONT.render("Wolf Population: " + str(len(pack)), True, (0, 0, 0))
         screen.blit(text, (50, 110))
     pygame.display.update()
 
@@ -68,12 +68,14 @@ def moveTargeted(wolf, herd):
                     minInd = i
             wolf.target = herd[minInd]
         radians = math.atan2(wolf.target.y - wolf.y, wolf.target.x - wolf.x)
-        dy = 5 * math.sin(radians)
-        dx = 5 * math.cos(radians)
+        dy = wolf.VEL * math.sin(radians)
+        dx = wolf.VEL * math.cos(radians)
         wolf.x += int(dx)
         wolf.y += int(dy)
         wolf.energy -= wolf.FATIGUE
         wolf.checkBounds()
+    else:
+        wolf.energy -= wolf.IDLE_FATIGUE
 
 def moveTargeted2(deer, pack):
     if len(pack) > 0:
@@ -86,8 +88,8 @@ def moveTargeted2(deer, pack):
                 minInd = i
         nearest = pack[minInd]
         radians = math.atan2(nearest.y - deer.y, nearest.x - deer.x)
-        dy = 4 * math.sin(radians)
-        dx = 4 * math.cos(radians)
+        dy = deer.VEL * math.sin(radians)
+        dx = deer.VEL * math.cos(radians)
         deer.x -= int(dx)  # running away
         deer.y -= int(dy)
         deer.energy -= deer.FATIGUE
@@ -99,9 +101,7 @@ def main():
     clock = pygame.time.Clock()
 
     spawnDeer(Deer.herd, 100)
-    spawnWolf(Wolf.pack, 8)
-
-    # direction = -1
+    spawnWolf(Wolf.pack, 20)
 
     while running:
         clock.tick(30)
@@ -112,20 +112,7 @@ def main():
                 running = False
                 pygame.quit()
                 quit()
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_w:
-            #         direction = 0
-            #     if event.key == pygame.K_a:
-            #         direction = 2
-            #     if event.key == pygame.K_s:
-            #         direction = 1
-            #     if event.key == pygame.K_d:
-            #         direction = 3
-            # if event.type == pygame.KEYUP:
-            #     direction = -1
 
-        # if len(Wolf.wolves) > 0:
-        #     Wolf.wolves[0].moveController(direction)
         for wolf in Wolf.pack:
             wolf.grow()
             moveTargeted(wolf, Deer.herd)
@@ -133,7 +120,6 @@ def main():
             deer.grow()
             # moveTargeted2(deer, Wolf.pack)
             deer.move()
-
 
         checkKillings(Wolf.pack, Deer.herd)
         checkDeadAnimals(Wolf.pack, Deer.herd)

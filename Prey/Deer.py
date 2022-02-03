@@ -5,24 +5,26 @@ import time
 
 DEER_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","deer.png")),  (8, 8))
 PADDING = 10
+MAX_POPULATION = 1300
 herd = []
 
 class Deer:
-    MAX_VEL = 5  # velocity
+    VEL = 3  # velocity
     FATIGUE = 0.5  # energy cost for moving
     MAX_MOVE_TIME = 30  # number of frames to move in random dir
-    MAX_AGE = 12  # maximum life of a deer
-    MAX_HUNGER = 3  # maximum seconds a wolf can go without eating
-    MATURITY_AGE = 7  # age of maturity in secs
-    BIRTH_INTERVAL = 2  # inrerval between two litters
+    MAX_AGE = 2  # maximum life of a deer
+    MATURITY_AGE = 2  # age of maturity in secs
+    MIN_LITTER_SIZE = 1  # minimum size of litter
+    MAX_LITTER_SIZE = 5  # maximum size of litter
+    BIRTH_INTERVAL = 1.5  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
     REPRODUCTION_THRESHOLD = 90  # energy required to reproduce
+    REPRODUCTION_ENERGY = 40  # energy required to reproduce
 
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.energy = 100
-        # self.hunger = 0
         self.age = 0
         self.health = 0
         self.alive = True
@@ -66,13 +68,14 @@ class Deer:
             herd.remove(self)
         if self.age > self.MATURITY_AGE:
             self.mature = True
-        if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL:
+        if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL and len(herd) < MAX_POPULATION:
             self.reproduce()
 
     def reproduce(self):
         self.birthTime = time.time()
+        self.energy -= self.REPRODUCTION_ENERGY
         self.timeSinceLastBirth = 0
-        litterSize = random.randint(1, 2)
+        litterSize = random.randint(1, self.MAX_LITTER_SIZE)
         for _ in range(litterSize):
             randX = random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)
             randY = random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)
@@ -87,7 +90,8 @@ class Deer:
             herd.append(Deer(self.x + randX, self.y + randY))
 
     def draw(self, screen):
-        screen.blit(DEER_IMG, (self.x, self.y))
+        pygame.draw.circle(screen, (51,204,255), (self.x, self.y), 4)
+        # screen.blit(DEER_IMG, (self.x, self.y))
 
     def isAlive(self):
         return self.alive

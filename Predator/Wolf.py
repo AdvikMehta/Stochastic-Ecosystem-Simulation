@@ -7,14 +7,18 @@ WOLF_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","wolf.
 pack = []
 
 class Wolf:
-    VEL = 5  # velocity
+    VEL = 5.5  # velocity - 50-60 kmph
     FATIGUE = 0.5  # energy cost for moving
-    MAX_AGE = 20  # maximum life of a wolf
-    MAX_HUNGER = 3  # maximum seconds a wolf can go without eating
-    MATURITY_AGE = 10  # age of maturity
-    BIRTH_INTERVAL = 4  # inrerval between two litters
+    IDLE_FATIGUE = 0.3  # energy cost if not moving for food
+    MAX_AGE = 15  # maximum life of a wolf
+    MAX_HUNGER = 1  # maximum seconds a wolf can go without eating
+    MATURITY_AGE = 3  # age of maturity
+    MIN_LITTER_SIZE = 1  # minimum size of litter
+    MAX_LITTER_SIZE = 2  # maximum size of litter
+    BIRTH_INTERVAL = 1  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
-    REPRODUCTION_THRESHOLD = 90  # energy required to reproduce
+    REPRODUCTION_THRESHOLD = 90  # minimum energy required to reproduce
+    REPRODUCTION_ENERGY = 40  # energy required to reproduce
 
     def __init__(self, x, y):
         self.x = x
@@ -32,22 +36,6 @@ class Wolf:
         self.timeSinceLastBirth = 0
         self.vel = (0, 0)
         self.target = None
-
-    # def moveController(self, direction):
-    #     if direction == -1:
-    #         return
-    #     if direction == 0:  # up
-    #         self.y -= self.VEL
-    #     elif direction == 1:  # down
-    #         self.y += self.VEL
-    #     elif direction == 2:  # left
-    #         self.x -= self.VEL
-    #     else:  # right
-    #         self.x += self.VEL
-    #     self.energy -= self.FATIGUE
-    #     if self.energy < 0:
-    #         self.alive = False
-    #     self.checkBounds()
 
     def checkBounds(self):
         if self.x < 0:
@@ -82,8 +70,9 @@ class Wolf:
 
     def reproduce(self):
         self.birthTime = time.time()
+        self.energy -= self.REPRODUCTION_ENERGY
         self.timeSinceLastBirth = 0
-        litterSize = random.randint(1, 4)
+        litterSize = random.randint(self.MIN_LITTER_SIZE, self.MAX_LITTER_SIZE)
         for _ in range(litterSize):
             pack.append(Wolf(self.x + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY),
                             self.y + random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)))
