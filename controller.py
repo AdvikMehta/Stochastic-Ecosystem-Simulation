@@ -4,11 +4,14 @@ import random as rd
 import math
 import Prey.Deer as Deer
 import Predator.Wolf as Wolf
+# from graphing import graphPopulation
+
 pygame.init()
 pygame.font.init()
 
 WIN_WIDTH = 600
-WIN_HEIGHT = 600
+SIM_HEIGHT = 600
+WIN_HEIGHT = 700
 PADDING = 10
 GLOBAL_ENERGY = 100
 STAT_FONT = pygame.font.Font((os.path.join("assets","statfont.ttf")), 28)
@@ -19,24 +22,30 @@ def drawWindow(screen, pack, herd):
         deer.draw(screen)
     for wolf in pack:
         wolf.draw(screen)
-        if wolf.target:
-            pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x, wolf.target.y))
+        # if wolf.target:
+        #     pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x, wolf.target.y))
     if len(pack) > 0 and len(herd) > 0:
-        text = STAT_FONT.render("Timer " + str(int(pack[0].energy)), True, (0, 0, 0))
-        screen.blit(text, (50, 50))
         text = STAT_FONT.render("Deer Population: " + str(len(herd)), True, (0, 0, 0))
-        screen.blit(text, (50, 80))
+        screen.blit(text, (50, 50))
         text = STAT_FONT.render("Wolf Population: " + str(len(pack)), True, (0, 0, 0))
-        screen.blit(text, (50, 110))
+        screen.blit(text, (50, 75))
     pygame.display.update()
 
 def spawnDeer(herd, num):
     for _ in range(num):
-        herd.append(Deer.Deer(rd.randint(0, WIN_WIDTH-PADDING), rd.randint(0, WIN_HEIGHT-PADDING)))
+        herd.append(Deer.Deer(rd.randint(0, WIN_WIDTH-PADDING), rd.randint(0, SIM_HEIGHT-PADDING)))
 
-def spawnWolf(wolves, num):
+def spawnWolf(pack, num):
     for _ in range(num):
-        wolves.append(Wolf.Wolf(rd.randint(0, WIN_WIDTH-PADDING), rd.randint(0, WIN_HEIGHT-PADDING)))
+        pack.append(Wolf.Wolf(rd.randint(0, WIN_WIDTH-PADDING), rd.randint(0, SIM_HEIGHT-PADDING)))
+
+def checkPopulations(pack, herd):
+    if len(herd) <= 50:
+        print("Deer population extinct. Wolves will soon die or migrate to other regions")
+        spawnDeer(herd, 50)
+    elif len(pack) < 2:
+        print("Local wolf population extinct. 2 new wolves arrived from a different territory")
+        spawnWolf(pack, 2)
 
 def checkDeadAnimals(pack, herd):
     for deer in herd:
@@ -99,11 +108,16 @@ def main():
     running = True
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     clock = pygame.time.Clock()
+    pygame.display.set_caption("Wolf-Deer Simulator")
+    numWolves = []
+    frameCounters = []
 
     spawnDeer(Deer.herd, 100)
     spawnWolf(Wolf.pack, 20)
+    frameCounter = 0
 
     while running:
+        frameCounter += 1
         clock.tick(30)
 
         # event listening
@@ -112,6 +126,11 @@ def main():
                 running = False
                 pygame.quit()
                 quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    spawnDeer(Deer.herd, 100)
+                elif event.key == pygame.K_w:
+                    spawnWolf(Wolf.pack, 20)
 
         for wolf in Wolf.pack:
             wolf.grow()
@@ -123,6 +142,11 @@ def main():
 
         checkKillings(Wolf.pack, Deer.herd)
         checkDeadAnimals(Wolf.pack, Deer.herd)
+        checkPopulations(Wolf.pack, Deer.herd)
+
+        numWolves.append(len(Wolf.pack))
+        frameCounters.append(frameCounter)
+        # graphPopulation(numWolves, frameCounter)
 
         drawWindow(screen, Wolf.pack, Deer.herd)
 

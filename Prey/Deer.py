@@ -5,7 +5,7 @@ import time
 
 DEER_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","deer.png")),  (8, 8))
 PADDING = 10
-MAX_POPULATION = 1300
+MAX_POPULATION = 1000
 herd = []
 
 class Deer:
@@ -37,6 +37,10 @@ class Deer:
 
     def move(self):
         if self.moveTime < self.MAX_MOVE_TIME:
+            if (self.x <= PADDING and self.vel[0] < 0) or (self.x >= 600-PADDING and self.vel[0] > 0):
+                self.vel = -self.vel[0], self.vel[1]
+            if (self.y == PADDING and self.vel[1] < 0) or (self.y >= 600-PADDING and self.vel[1] > 0):
+                self.vel = self.vel[0], -self.vel[1]
             self.x += self.vel[0]
             self.y += self.vel[1]
             self.moveTime += 1
@@ -47,14 +51,14 @@ class Deer:
         self.checkBounds()
 
     def checkBounds(self):
-        if self.x < 0:
-            self.x = 0
-        if self.x > 600 - DEER_IMG.get_width():
-            self.x = 600 - DEER_IMG.get_width()
-        if self.y < 0:
-            self.y = 0
-        if self.y > 600 - DEER_IMG.get_height():
-            self.y = 600 - DEER_IMG.get_height()
+        if self.x < PADDING:
+            self.x = PADDING + 1
+        if self.x > 600 - PADDING:
+            self.x = 600 - PADDING - 1
+        if self.y < PADDING:
+            self.y = PADDING + 1
+        if self.y > 600 - PADDING:
+            self.y = 600 - PADDING - 1
 
     def isEaten(self):
         self.energy = 0
@@ -65,7 +69,6 @@ class Deer:
         self.timeSinceLastBirth = time.time() - self.birthTime
         if self.age > self.MAX_AGE:
             self.isEaten()
-            herd.remove(self)
         if self.age > self.MATURITY_AGE:
             self.mature = True
         if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL and len(herd) < MAX_POPULATION:
@@ -79,13 +82,9 @@ class Deer:
         for _ in range(litterSize):
             randX = random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)
             randY = random.randint(-self.REPRODUCTION_PROXIMITY, self.REPRODUCTION_PROXIMITY)
-            if self.x + randX < 0:
+            if self.x + randX < PADDING or self.x + randX > 600 - PADDING:
                 randX = 0
-            elif self.x + randX > 600 - PADDING:
-                randX = 0
-            if self.y + randY < 0:
-                randY = 0
-            elif self.y + randY > 600 - PADDING:
+            if self.y + randY < PADDING or self.y + randY > 600 - PADDING:
                 randY = 0
             herd.append(Deer(self.x + randX, self.y + randY))
 

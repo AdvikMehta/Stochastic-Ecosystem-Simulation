@@ -4,14 +4,15 @@ import time
 import random
 
 WOLF_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","wolf.png")),  (16, 16))
+MAX_POPULATION = 300
 pack = []
 
 class Wolf:
-    VEL = 5.5  # velocity - 50-60 kmph
+    VEL = 6  # velocity - 50-60 kmph
     FATIGUE = 0.5  # energy cost for moving
     IDLE_FATIGUE = 0.3  # energy cost if not moving for food
     MAX_AGE = 15  # maximum life of a wolf
-    MAX_HUNGER = 1  # maximum seconds a wolf can go without eating
+    MAX_HUNGER = 0.8  # maximum seconds a wolf can go without eating
     MATURITY_AGE = 3  # age of maturity
     MIN_LITTER_SIZE = 1  # minimum size of litter
     MAX_LITTER_SIZE = 2  # maximum size of litter
@@ -65,7 +66,7 @@ class Wolf:
             self.kill()
         elif self.age > self.MATURITY_AGE:
             self.mature = True
-        if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL and self.energy > 90:
+        if self.mature and self.timeSinceLastBirth > self.BIRTH_INTERVAL and self.energy > 90 and len(pack) < MAX_POPULATION:
             self.reproduce()
 
     def reproduce(self):
