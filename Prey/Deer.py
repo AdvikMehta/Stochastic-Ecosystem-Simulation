@@ -14,9 +14,9 @@ class Deer:
     MAX_MOVE_TIME = 30  # number of frames to move in random dir
     MAX_AGE = 2  # maximum life of a deer
     MATURITY_AGE = 2  # age of maturity in secs
-    MIN_LITTER_SIZE = 1  # minimum size of litter
+    MIN_LITTER_SIZE = 3  # minimum size of litter
     MAX_LITTER_SIZE = 5  # maximum size of litter
-    BIRTH_INTERVAL = 1.5  # inrerval between two litters
+    BIRTH_INTERVAL = 0.3  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
     REPRODUCTION_THRESHOLD = 90  # energy required to reproduce
     REPRODUCTION_ENERGY = 40  # energy required to reproduce
