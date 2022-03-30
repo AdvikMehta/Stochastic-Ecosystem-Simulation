@@ -17,7 +17,7 @@ class Wolf:
     FATIGUE = 2  # energy cost for moving
     IDLE_FATIGUE = 0.3  # energy cost if not moving for food
     MAX_AGE = 20  # maximum life of a wolf
-    MAX_HUNGER = 1.1  # maximum seconds a wolf can go without eating
+    MAX_HUNGER = 1.2  # maximum seconds a wolf can go without eating
     EAT_ENERGY = 70  # energy gained from eating prey
     MATURITY_AGE = 4  # age of maturity
     MIN_LITTER_SIZE = 1  # minimum size of litter
