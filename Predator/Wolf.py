@@ -4,7 +4,7 @@ import time
 import random
 
 WOLF_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","wolf.png")),  (16, 16))
-MAX_POPULATION = 20
+MAX_POPULATION = 100
 pack = []
 avgWolfAge = 0
 maxWolfAge = 0
@@ -21,7 +21,7 @@ class Wolf:
     MATURITY_AGE = 4  # age of maturity
     MIN_LITTER_SIZE = 1  # minimum size of litter
     MAX_LITTER_SIZE = 4  # maximum size of litter
-    BIRTH_INTERVAL = 4  # inrerval between two litters
+    BIRTH_INTERVAL = 4  # interval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
     REPRODUCTION_THRESHOLD = 95  # minimum energy required to reproduce
     REPRODUCTION_ENERGY = 40  # energy loss during reproduction

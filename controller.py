@@ -6,7 +6,7 @@ import time
 import Prey.Deer as Deer
 import Predator.Wolf as Wolf
 import pygame.freetype
-# from graphing import graphPopulation
+from graphing import deerPopul, wolfPopul, graph
 
 pygame.init()
 pygame.font.init()
@@ -38,13 +38,6 @@ def drawWindow(screen, pack, herd):
         deer.draw(screen)
     for wolf in pack:
         wolf.draw(screen)
-        # if wolf.target:
-        #     pygame.draw.line(screen, (0,0,0), (wolf.x + 8, wolf.y + 8), (wolf.target.x, wolf.target.y))
-    # if len(pack) > 0 and len(herd) > 0:
-    #     text = STAT_FONT.render("Deer Population: " + str(len(herd)), True, (0, 0, 0))
-    #     screen.blit(text, (50, 50))
-    #     text = STAT_FONT.render("Wolf Population: " + str(len(pack)), True, (0, 0, 0))
-    #     screen.blit(text, (50, 75))
     text = font28.render("Console", True, (255, 255, 255))
     screen.blit(text, (10, SIM_HEIGHT+5))
     text = font28.render("Time elapsed: " + str(round(time.time() - SIM_START_TIME)), True, (255, 255, 255))
@@ -154,23 +147,26 @@ def main():
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     clock = pygame.time.Clock()
     pygame.display.set_caption("Wolf-Deer Simulator")
-    # numWolves = []
-    # frameCounters = []
 
     spawnDeer(Deer.herd, 100)
     spawnWolf(Wolf.pack, 20)
     frameCounter = 0
+    frameInterval = 20  # data logged every 5 frames, ie, 6 times each second
+    fps = 30
 
     while running:
         frameCounter += 1
-        clock.tick(30)
+        if frameCounter % frameInterval == 0:
+            deerPopul.append(len(Deer.herd))
+            wolfPopul.append(len(Wolf.pack))
+        clock.tick(fps)
 
         # event listening
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                pygame.quit()
-                quit()
+                # pygame.quit()
+                # quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     spawnDeer(Deer.herd, 100)
@@ -198,6 +194,8 @@ def main():
         # graphPopulation(numWolves, frameCounter)
 
         drawWindow(screen, Wolf.pack, Deer.herd)
+
+    graph(fps, frameCounter, frameInterval)
 
     pygame.quit()
     quit()

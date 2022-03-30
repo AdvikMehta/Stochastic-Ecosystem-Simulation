@@ -90,7 +90,6 @@ class Deer:
 
     def draw(self, screen):
         pygame.draw.circle(screen, (51,204,255), (self.x, self.y), 4)
-        # screen.blit(DEER_IMG, (self.x, self.y))
 
     def isAlive(self):
         return self.alive
