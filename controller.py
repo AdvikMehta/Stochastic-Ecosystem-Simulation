@@ -12,8 +12,10 @@ pygame.init()
 pygame.font.init()
 
 WIN_WIDTH = 600
-SIM_HEIGHT = 600
+SIM_WIDTH = 600
 WIN_HEIGHT = 700
+SIM_HEIGHT = 600
+
 PADDING = 10
 GLOBAL_ENERGY = 100
 STAT_FONT28 = pygame.font.Font((os.path.join("assets","times-new-roman.ttf")), 28)

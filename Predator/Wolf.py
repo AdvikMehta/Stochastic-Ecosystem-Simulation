@@ -4,7 +4,7 @@ import time
 import random
 
 WOLF_IMG = pygame.transform.scale(pygame.image.load(os.path.join("assets","wolf.png")),  (16, 16))
-MAX_POPULATION = 300
+MAX_POPULATION = 20
 pack = []
 avgWolfAge = 0
 maxWolfAge = 0
@@ -12,16 +12,16 @@ totalWolvesExisted = 0
 
 class Wolf:
     MAX_ENERGY = 100  # total energy of a wolf
-    VEL = 6  # velocity - 50-60 kmph
-    FATIGUE = 1.5  # energy cost for moving
+    VEL = 5.7  # velocity - 50-60 kmph
+    FATIGUE = 2  # energy cost for moving
     IDLE_FATIGUE = 0.3  # energy cost if not moving for food
     MAX_AGE = 20  # maximum life of a wolf
-    MAX_HUNGER = 1  # maximum seconds a wolf can go without eating
+    MAX_HUNGER = 1.1  # maximum seconds a wolf can go without eating
     EAT_ENERGY = 70  # energy gained from eating prey
     MATURITY_AGE = 4  # age of maturity
     MIN_LITTER_SIZE = 1  # minimum size of litter
-    MAX_LITTER_SIZE = 2  # maximum size of litter
-    BIRTH_INTERVAL = 5  # inrerval between two litters
+    MAX_LITTER_SIZE = 4  # maximum size of litter
+    BIRTH_INTERVAL = 4  # inrerval between two litters
     REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
     REPRODUCTION_THRESHOLD = 95  # minimum energy required to reproduce
     REPRODUCTION_ENERGY = 40  # energy loss during reproduction
@@ -33,14 +33,12 @@ class Wolf:
         self.hunger = 0
         self.gender = random.randint(0, 1)  # 0 for male, 1 for female
         self.age = 0  # in secs
-        self.health = 0
         self.alive = True
         self.mature = False
         self.spawn_time = time.time()
         self.lastMealTime = self.spawn_time
         self.birthTime = self.spawn_time
         self.timeSinceLastBirth = 0
-        self.vel = (0, 0)
         self.target = None
 
     def checkBounds(self):

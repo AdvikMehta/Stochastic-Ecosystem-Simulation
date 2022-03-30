@@ -1,0 +1,16 @@
+MAX_ENERGY = 100  # total energy of a wolf
+VEL = 5.7  # velocity - 50-60 kmph
+FATIGUE = 2  # energy cost for moving
+IDLE_FATIGUE = 0.3  # energy cost if not moving for food
+MAX_AGE = 20  # maximum life of a wolf
+MAX_HUNGER = 1.1  # maximum seconds a wolf can go without eating
+EAT_ENERGY = 70  # energy gained from eating prey
+MATURITY_AGE = 4  # age of maturity
+MIN_LITTER_SIZE = 1  # minimum size of litter
+MAX_LITTER_SIZE = 4  # maximum size of litter
+BIRTH_INTERVAL = 4  # inrerval between two litters
+REPRODUCTION_PROXIMITY = 100  # spawn offspring within this radius
+REPRODUCTION_THRESHOLD = 95  # minimum energy required to reproduce
+REPRODUCTION_ENERGY = 40  # energy loss during reproduction
+
+APPROXIMATE AVERAGE AGE AFTER 200 SECONDS: 10.334
