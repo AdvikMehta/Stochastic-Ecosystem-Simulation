@@ -165,8 +165,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                # pygame.quit()
-                # quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     spawnDeer(Deer.herd, 100)
@@ -180,7 +178,6 @@ def main():
             moveTargeted(wolf, Deer.herd)
         for deer in Deer.herd:
             deer.grow()
-            # moveTargeted2(deer, Wolf.pack)
             deer.move()
 
         checkKillings(Wolf.pack, Deer.herd)
@@ -188,16 +185,10 @@ def main():
         checkPopulations(Wolf.pack, Deer.herd)
         checkActiveConsoleMessages()
 
-        # Graphing
-        # numWolves.append(len(Wolf.pack))
-        # frameCounters.append(frameCounter)
-        # graphPopulation(numWolves, frameCounter)
-
         drawWindow(screen, Wolf.pack, Deer.herd)
 
     graph(fps, frameCounter, frameInterval)
 
-    pygame.quit()
     quit()
 
 main()

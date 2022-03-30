@@ -9,6 +9,7 @@ pack = []
 avgWolfAge = 0
 maxWolfAge = 0
 totalWolvesExisted = 0
+maxAgeDeaths = 0
 
 class Wolf:
     MAX_ENERGY = 100  # total energy of a wolf
@@ -65,11 +66,14 @@ class Wolf:
         maxWolfAge = max(self.age, maxWolfAge)
 
     def grow(self):
+        global maxAgeDeaths
         self.age = time.time() - self.spawn_time
         self.timeSinceLastBirth = time.time() - self.birthTime
         self.hunger = time.time() - self.lastMealTime
 
         if self.age > self.MAX_AGE or self.energy < 0 or self.hunger > self.MAX_HUNGER:
+            if self.age > self.MAX_AGE:
+                maxAgeDeaths += 1
             self.kill()
         elif self.age > self.MATURITY_AGE:
             self.mature = True
